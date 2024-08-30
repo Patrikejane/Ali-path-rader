@@ -76,7 +76,7 @@ const CsvReader: React.FC = () => {
 
   return (
     <div>
-      <h1>Ali Location Reader</h1>
+      <h1>Ali Location Redar</h1>
       {/* <TextField
       > */}
 
