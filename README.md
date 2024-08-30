@@ -1,3 +1,9 @@
+![image](https://github.com/user-attachments/assets/aceb9499-5646-4ee2-8fbd-1dfc7798fa44)
+
+Elephan Tracker : Display location data on the map
+
+
+![me](https://github.com/Patrikejane/Ali-path-rader/blob/main/assets/Alilocation.gif)
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
