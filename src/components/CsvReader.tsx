@@ -1,15 +1,31 @@
 import React, { useState } from 'react';
 import Papa from 'papaparse';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import Button from '@mui/material/Button';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { MapView } from './index';
 
 interface Location {
   id: string;
-  route: string;
+  ElephantMarker: string;
   date: string;
   latitude: number;
   longitude: number;
   name: string;
 }
+
+const VisuallyHiddenInput = styled('input')({
+  clip: 'rect(0 0 0 0)',
+  clipPath: 'inset(50%)',
+  height: 1,
+  overflow: 'hidden',
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  whiteSpace: 'nowrap',
+  width: 1,
+});
 
 const CsvReader: React.FC = () => {
   const [locations, setLocations] = useState<Location[]>([]);
@@ -23,25 +39,27 @@ const CsvReader: React.FC = () => {
         header: false, // Since your dataset doesn't have a header row
         skipEmptyLines: true,
         complete: (result) => {
-          const parsedLocations = (result.data as string[][]).map((location: string[]) => {
-            const latitude = parseFloat(location[3]);
-            const longitude = parseFloat(location[4]);
+          const parsedLocations: Location[] = (result.data as string[][])
+            .map((location: string[]) => {
+              const latitude = parseFloat(location[3]);
+              const longitude = parseFloat(location[4]);
 
-            // Validate latitude and longitude
-            if (isNaN(latitude) || isNaN(longitude)) {
-              console.error(`Invalid latitude or longitude in the data: ${location[3]}, ${location[4]}`);
-              return null; // Skip this location if invalid
-            }
+              // Validate latitude and longitude
+              if (isNaN(latitude) || isNaN(longitude)) {
+                console.error(`Invalid latitude or longitude in the data: ${location[3]}, ${location[4]}`);
+                return null; // Skip this location if invalid
+              }
 
-            return {
-              id: location[0],
-              route: location[1],
-              date: location[2],
-              latitude,
-              longitude,
-              name: location[5],
-            };
-          }).filter((location): location is Location => location !== null);
+              return {
+                id: location[0],
+                ElephantMarker: location[1],
+                date: location[2],
+                latitude,
+                longitude,
+                name: location[5],
+              };
+            })
+            .filter((location): location is Location => location !== null); // Type guard to ensure location is Location
 
           setLocations(parsedLocations);
         },
@@ -58,36 +76,57 @@ const CsvReader: React.FC = () => {
 
   return (
     <div>
-      <h1>Ali location Redar</h1>
-      <input type="file" accept=".csv" onChange={handleFileUpload} />
+      <h1>Ali Location Reader</h1>
+      {/* <TextField
+      > */}
+
+<Button
+      component="label"
+      role={undefined}
+      variant="contained"
+      tabIndex={-1}
+      startIcon={<CloudUploadIcon />}
+    >
+      Upload files
+      <VisuallyHiddenInput
+        type="file"
+        onChange={handleFileUpload}
+        multiple
+      />
+    </Button>
+
+      {/* </TextField> */}
       {locations.length > 0 && (
         <>
-        <div className='table-container'>
-          <table>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Route</th>
-                <th>Date</th>
-                <th>Latitude</th>
-                <th>Longitude</th>
-                <th>Name</th>
-              </tr>
-            </thead>
-            <tbody>
-              {locations.map((location, index) => (
-                 <tr key={index} style={{ backgroundColor: location === currentLocation ? '#d3d3d3' : 'transparent' }}>
-                  <td>{location.id}</td>
-                  <td>{location.route}</td>
-                  <td>{location.date}</td>
-                  <td>{location.latitude}</td>
-                  <td>{location.longitude}</td>
-                  <td>{location.name}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          </div>
+          <TableContainer component={Paper} className="table-container">
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>ID</TableCell>
+                  <TableCell>ElephantMarker</TableCell>
+                  <TableCell>Date</TableCell>
+                  <TableCell>Latitude</TableCell>
+                  <TableCell>Longitude</TableCell>
+                  <TableCell>Name</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {locations.slice(0, 10).map((location, index) => (
+                  <TableRow
+                    key={index}
+                    sx={{ backgroundColor: location === currentLocation ? '#d3d3d3' : 'transparent' }}
+                  >
+                    <TableCell>{location.id}</TableCell>
+                    <TableCell>{location.ElephantMarker}</TableCell>
+                    <TableCell>{location.date}</TableCell>
+                    <TableCell>{location.latitude}</TableCell>
+                    <TableCell>{location.longitude}</TableCell>
+                    <TableCell>{location.name}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
           <MapView locations={locations} onLocationChange={handleLocationChange} />
         </>
       )}
