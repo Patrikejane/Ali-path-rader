@@ -1,5 +1,4 @@
 import React from 'react';
-import logo from './logo.svg';
 import { CsvReader } from './components';
 import './App.css';
 
